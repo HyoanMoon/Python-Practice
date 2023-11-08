@@ -1,11 +1,15 @@
-import requests # requests 라이브러리 설치 필요
+import requests
+from bs4 import BeautifulSoup
 
-r = requests.get('http://spartacodingclub.shop/sparta_api/seoulair')
-rjson = r.json()
+URL = "https://movie.daum.net/ranking/reservation"
+headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
+data = requests.get(URL, headers=headers)
+soup = BeautifulSoup(data.text, 'html.parser')
 
-rows= rjson['RealtimeCityAir']['row']
+lis = soup.select('#mainContent > div > div.box_ranking > ol > li')
 
-for a in rows :
-    gu_name = a['MSRSTE_NM']
-    gu_mise = a['IDEX_MVL']
-    print(gu_mise,gu_name)
+for li in lis:
+    rank = li.select_one('.rank_num').text
+    title = li.select_one('.link_txt').text
+    rate = li.select_one('.txt_grade').text
+    print(rank,title,rate)
